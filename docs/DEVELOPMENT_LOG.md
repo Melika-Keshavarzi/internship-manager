@@ -17,3 +17,12 @@
 - Developed an `Activity` class to serve as a central coordinator for managing internship or thesis properties.
 - Implemented object-to-object relationships by passing complete `Student` and `Supervisor` object references into the `Activity` instance.
 - Verified relational connections and custom formatting logic using a dedicated test script (`test_relationships.py`).
+
+## [2026-05-22] — Day 4: Managing Collections of Objects
+
+- Created `StudentManager` class to handle collections of Student objects.
+- Implemented add, remove, search, and filter methods.
+- Added duplicate ID validation before adding new students.
+- Used list comprehensions for efficient searching and filtering.
+- Separated management logic from the Student class itself.
+- Verified all operations using a dedicated test script.
