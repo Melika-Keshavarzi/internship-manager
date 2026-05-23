@@ -26,3 +26,10 @@
 - Used list comprehensions for efficient searching and filtering.
 - Separated management logic from the Student class itself.
 - Verified all operations using a dedicated test script.
+
+## [2026-05-23] — Day 5: File Storage with JSON
+- Added `from_dict()` class method to Student for reconstructing objects from raw dictionary data.
+- Implemented `save_to_json()` method in StudentManager to persist student records to a JSON file.
+- Implemented `load_from_json()` method to reload saved student data back into the application.
+- Added file existence validation checks before attempting to read inputs to prevent runtime crashes.
+- Verified full serialization and deserialization lifecycle works correctly via `test_json.py`.
