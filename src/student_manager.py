@@ -1,3 +1,5 @@
+import json
+import os
 from src.student import Student
 
 class StudentManager:
@@ -49,3 +51,19 @@ class StudentManager:
         results = [s for s in self.students
                    if program in s.degree_program.lower()]
         return results
+
+    def save_to_json(self, filepath):
+        data = [student.to_dict() for student in self.students]
+        with open(filepath, "w") as file:
+            json.dump(data, file, indent=4)
+        print(f"Successfully saved {len(self.students)} students to {filepath}")
+
+    def load_from_json(self, filepath):
+        if not os.path.exists(filepath):
+            print(f"File not found: {filepath}")
+            return False
+        with open(filepath, "r") as file:
+            data = json.load(file)
+        self.students = [Student.from_dict(s) for s in data]
+        print(f"Successfully loaded {len(self.students)} students from {filepath}")
+        return True

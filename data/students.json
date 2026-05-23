@@ -1,0 +1,29 @@
+[
+    {
+        "student_id": "5777",
+        "first_name": "Melika",
+        "last_name": "Kshzi",
+        "email": "melika@unime.it",
+        "phone": "+39 000000",
+        "enrollment_year": 2024,
+        "degree_program": "Data Analysis"
+    },
+    {
+        "student_id": "5888",
+        "first_name": "Erfan",
+        "last_name": "Ghn",
+        "email": "erfan@unime.it",
+        "phone": "+39 111111",
+        "enrollment_year": 2025,
+        "degree_program": "Data Analysis"
+    },
+    {
+        "student_id": "5999",
+        "first_name": "Yara",
+        "last_name": "Frz",
+        "email": "yara@unime.it",
+        "phone": "+39 222222",
+        "enrollment_year": 2023,
+        "degree_program": "Artificial Intelligence"
+    }
+]
