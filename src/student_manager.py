@@ -1,5 +1,7 @@
 import json
 import os
+import csv
+import pandas as pd
 from src.student import Student
 
 class StudentManager:
@@ -56,7 +58,7 @@ class StudentManager:
         data = [student.to_dict() for student in self.students]
         with open(filepath, "w") as file:
             json.dump(data, file, indent=4)
-        print(f"Successfully saved {len(self.students)} students to {filepath}")
+        print(f"Saved {len(self.students)} students to {filepath}")
 
     def load_from_json(self, filepath):
         if not os.path.exists(filepath):
@@ -65,5 +67,47 @@ class StudentManager:
         with open(filepath, "r") as file:
             data = json.load(file)
         self.students = [Student.from_dict(s) for s in data]
-        print(f"Successfully loaded {len(self.students)} students from {filepath}")
+        print(f"Loaded {len(self.students)} students from {filepath}")
         return True
+
+    def export_to_csv(self, filepath):
+        if len(self.students) == 0:
+            print("No students to export!")
+            return False
+        with open(filepath, "w", newline="") as file:
+            fieldnames = ["student_id", "first_name", "last_name",
+                         "email", "phone", "enrollment_year", "degree_program"]
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            for student in self.students:
+                writer.writerow(student.to_dict())
+        print(f"Exported {len(self.students)} students to {filepath}")
+        return True
+
+    def import_from_csv(self, filepath):
+        if not os.path.exists(filepath):
+            print(f"File not found: {filepath}")
+            return False
+        with open(filepath, "r") as file:
+            reader = csv.DictReader(file)
+            count = 0
+            for row in reader:
+                row["enrollment_year"] = int(row["enrollment_year"])
+                student = Student.from_dict(row)
+                if self.add_student(student):
+                    count += 1
+        print(f"Imported {count} students from {filepath}")
+        return True
+
+    def show_summary_with_pandas(self, filepath):
+        if not os.path.exists(filepath):
+            print(f"File not found: {filepath}")
+            return
+        df = pd.read_csv(filepath)
+        print("\n=== Student Summary (pandas) ===")
+        print(f"Total students: {len(df)}")
+        print(f"\nStudents per program:")
+        print(df["degree_program"].value_counts().to_string())
+        print(f"\nEnrollment years:")
+        print(df["enrollment_year"].value_counts().sort_index().to_string())
+        print("=" * 40)

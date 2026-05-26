@@ -33,3 +33,11 @@
 - Implemented `load_from_json()` method to reload saved student data back into the application.
 - Added file existence validation checks before attempting to read inputs to prevent runtime crashes.
 - Verified full serialization and deserialization lifecycle works correctly via `test_json.py`.
+
+## [2026-05-26] — Day 6: CSV Import & Export
+- Implemented `export_to_csv()` method to save student records into a CSV file readable by Excel.
+- Implemented `import_from_csv()` method to load student records from an existing CSV file.
+- Added type conversion for numeric fields during CSV import.
+- Introduced pandas library for data summary and analysis.
+- Implemented `show_summary_with_pandas()` to display student statistics grouped by program and enrollment year.
+- Verified full export and import cycle works correctly.
