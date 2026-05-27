@@ -10,10 +10,20 @@ class StudentManager:
         self.students = []
 
     def add_student(self, student):
+        # 1. Enforce attribute validation rules before modifying the collection
+        errors = student.validate()
+        if errors:
+            print(f"Validation failed for student candidate ({student.student_id or 'No ID'}):")
+            for error in errors:
+                print(f"  - {error}")
+            return False
+
+        # 2. Duplicate ID validation check
         for existing in self.students:
             if existing.student_id == student.student_id:
                 print(f"Student with ID {student.student_id} already exists!")
                 return False
+
         self.students.append(student)
         print(f"Student {student.get_full_name()} added successfully!")
         return True

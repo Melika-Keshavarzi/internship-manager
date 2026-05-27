@@ -41,3 +41,11 @@
 - Introduced pandas library for data summary and analysis.
 - Implemented `show_summary_with_pandas()` to display student statistics grouped by program and enrollment year.
 - Verified full export and import cycle works correctly.
+
+## [2026-05-27] — Day 7: Incorporating Professor Feedback & Advanced Validation
+- Created a `requirements.txt` file in the root directory specifying project dependencies (`pandas`).
+- Expanded and restructured `README.md` to map out the directory tree, describe core entity responsibilities, and document demonstration scripts.
+- Shifted internal definitions explicitly to label current framework checks as demonstration scripts rather than formal unit tests.
+- Designed a comprehensive `.validate()` runtime architecture inside the `Student` class to check for empty strings, structural email formatting (`@`), and proper logical enrollment year boundaries (2000–2030).
+- Hooked the validation execution layer into `StudentManager.add_student()` to prevent corrupted or duplicate elements from entering memory collections.
+- Authored `src/test_validation.py` to ensure all invalid data vectors are caught and logged successfully.
