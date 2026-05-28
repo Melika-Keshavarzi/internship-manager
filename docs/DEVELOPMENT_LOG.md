@@ -49,3 +49,16 @@
 - Designed a comprehensive `.validate()` runtime architecture inside the `Student` class to check for empty strings, structural email formatting (`@`), and proper logical enrollment year boundaries (2000–2030).
 - Hooked the validation execution layer into `StudentManager.add_student()` to prevent corrupted or duplicate elements from entering memory collections.
 - Authored `src/test_validation.py` to ensure all invalid data vectors are caught and logged successfully.
+
+## [2026-05-28] — Day 8: SQLite Database Integration
+- Implemented a relative database layer inside `src/database.py` with dedicated relational handling modules.
+- Formulated schemas creating three individual target tables (`students`, `supervisors`, `activities`).
+- Embedded robust `FOREIGN KEY` structural constraints to link ongoing activity items directly to student and supervisor table elements.
+- Engineered safe parameter boundaries for full operational CRUD tracking:
+  - `initialize_database()` for setup safety checks.
+  - `insert_student()` using try/except parameters to capture unique integrity constraints.
+  - `get_all_students()` and `get_student_by_id()` for array mapping tracking.
+  - `update_student()` and `delete_student()` handling runtime row operations.
+  - `search_students()` utilizing wildcard keyword text strings.
+- Applied parameterized execution queries with `?` protection filters to defend the operational logic against SQL Injection bugs.
+- Validated complete local system mechanics utilizing the `src/test_database.py` entry pipeline.
