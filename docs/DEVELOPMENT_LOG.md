@@ -62,3 +62,11 @@
   - `search_students()` utilizing wildcard keyword text strings.
 - Applied parameterized execution queries with `?` protection filters to defend the operational logic against SQL Injection bugs.
 - Validated complete local system mechanics utilizing the `src/test_database.py` entry pipeline.
+
+## [2026-05-29] — Day 9: Logging System
+- Engineered a centralized system logger inside `src/logger.py` with multi-handler routing.
+- Configured a `StreamHandler` to push core operational tracking summaries directly to the terminal interface.
+- Integrated a `RotatingFileHandler` configured to persist a persistent, deep-dive rolling history file up to 5MB at `logs/app.log`.
+- Classified event severity across standardized levels (`DEBUG` for query filters, `INFO` for system success, `WARNING` for structural validation rejections, and `ERROR` for file operational missing handles).
+- refactored `StudentManager` to map tracking entries comprehensively into memory arrays.
+- Executed integration checks via `src/test_logger.py` validating active generation channels.
