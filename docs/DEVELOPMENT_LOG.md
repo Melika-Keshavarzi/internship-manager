@@ -70,3 +70,11 @@
 - Classified event severity across standardized levels (`DEBUG` for query filters, `INFO` for system success, `WARNING` for structural validation rejections, and `ERROR` for file operational missing handles).
 - refactored `StudentManager` to map tracking entries comprehensively into memory arrays.
 - Executed integration checks via `src/test_logger.py` validating active generation channels.
+
+## [2026-05-30] — Day 10: Configuration Management
+- Created a centralized configuration file at `config/config.json` to manage variable application boundaries (database, logging settings, export options, and app metadata).
+- Developed `src/config_manager.py` implementing a robust `ConfigManager` parsing class.
+- Enforced the Singleton Design Pattern to guarantee a single configuration access entity is shared across runtime system processes.
+- Embedded a hardcoded `DEFAULT_CONFIG` dictionary structure to provide predictable fallback paths if disk configurations are missing or broken.
+- Refactored property access by constructing explicit utility methods (`get_database_path()`, `get_log_file()`, etc.) to isolate raw dictionary keys.
+- Validated setup mechanisms using the `src/test_config.py` verification scenario script.
