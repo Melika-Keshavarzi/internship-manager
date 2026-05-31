@@ -78,3 +78,10 @@
 - Embedded a hardcoded `DEFAULT_CONFIG` dictionary structure to provide predictable fallback paths if disk configurations are missing or broken.
 - Refactored property access by constructing explicit utility methods (`get_database_path()`, `get_log_file()`, etc.) to isolate raw dictionary keys.
 - Validated setup mechanisms using the `src/test_config.py` verification scenario script.
+
+## [2026-05-31] — Day 11: Command Line Interface
+- Developed `src/cli.py` to provide a robust, interactive text-based console menu dashboard.
+- Mapped all terminal operations directly to corresponding functions within `StudentManager`.
+- Created a top-level execution file (`main.py`) to serve as the unified application entry point.
+- Protected input fields with specialized `try/except` statements to trap invalid user inputs cleanly.
+- Verified successful cross-module initialization, data collection handling, list retrieval rendering, file outputs, and safe exit routines.
