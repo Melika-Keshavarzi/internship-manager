@@ -1,5 +1,8 @@
 import sqlite3
 import os
+from src.logger import get_logger
+
+logger = get_logger("database")
 
 DATABASE_PATH = "data/internship_manager.db"
 
@@ -12,6 +15,7 @@ def initialize_database():
     conn = get_connection()
     cursor = conn.cursor()
 
+    # Core student data table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS students (
             student_id TEXT PRIMARY KEY,
@@ -24,6 +28,7 @@ def initialize_database():
         )
     """)
 
+    # Supervisor tracking table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS supervisors (
             supervisor_id TEXT PRIMARY KEY,
@@ -34,6 +39,7 @@ def initialize_database():
         )
     """)
 
+    # Activity/Internship timeline tracking table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS activities (
             activity_id TEXT PRIMARY KEY,
@@ -50,8 +56,44 @@ def initialize_database():
         )
     """)
 
+    # One-to-Many relational table: Notes
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS notes (
+            note_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id TEXT NOT NULL,
+            date TEXT NOT NULL,
+            content TEXT NOT NULL,
+            FOREIGN KEY (student_id) REFERENCES students (student_id)
+        )
+    """)
+
+    # One-to-Many relational table: Links (GitHub, OneDrive, etc.)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS links (
+            link_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id TEXT NOT NULL,
+            link_type TEXT NOT NULL,
+            url TEXT NOT NULL,
+            description TEXT,
+            FOREIGN KEY (student_id) REFERENCES students (student_id)
+        )
+    """)
+
+    # One-to-Many relational table: Document Metadata
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS documents (
+            doc_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id TEXT NOT NULL,
+            file_path TEXT NOT NULL,
+            description TEXT,
+            upload_date TEXT,
+            FOREIGN KEY (student_id) REFERENCES students (student_id)
+        )
+    """)
+
     conn.commit()
     conn.close()
+    logger.info("Database initialized with all relational target framework tables")
     print("Database initialized successfully!")
 
 def insert_student(student):
@@ -59,7 +101,7 @@ def insert_student(student):
     cursor = conn.cursor()
     try:
         cursor.execute("""
-            INSERT INTO students 
+            INSERT INTO students
             (student_id, first_name, last_name, email, phone, enrollment_year, degree_program)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (
@@ -72,10 +114,12 @@ def insert_student(student):
             student.degree_program
         ))
         conn.commit()
+        logger.info(f"Student inserted: {student.student_id}")
         print(f"Student {student.get_full_name()} inserted into database!")
         return True
     except sqlite3.IntegrityError:
-        print(f"Student ID {student.student_id} already exists in database!")
+        logger.warning(f"Duplicate student ID hit on raw insertion: {student.student_id}")
+        print(f"Student ID {student.student_id} already exists!")
         return False
     finally:
         conn.close()
@@ -107,6 +151,7 @@ def update_student(student_id, first_name, last_name, email, phone, enrollment_y
     """, (first_name, last_name, email, phone, enrollment_year, degree_program, student_id))
     conn.commit()
     conn.close()
+    logger.info(f"Student updated: {student_id}")
     print(f"Student {student_id} updated successfully!")
 
 def delete_student(student_id):
@@ -115,6 +160,7 @@ def delete_student(student_id):
     cursor.execute("DELETE FROM students WHERE student_id = ?", (student_id,))
     conn.commit()
     conn.close()
+    logger.info(f"Student deleted: {student_id}")
     print(f"Student {student_id} deleted from database!")
 
 def search_students(keyword):
@@ -127,3 +173,101 @@ def search_students(keyword):
     rows = cursor.fetchall()
     conn.close()
     return rows
+
+# === NOTES OPERATIONS ===
+def add_note(student_id, date, content):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO notes (student_id, date, content)
+        VALUES (?, ?, ?)
+    """, (student_id, date, content))
+    conn.commit()
+    conn.close()
+    logger.info(f"Note added for student: {student_id}")
+    print(f"Note added for student {student_id}!")
+
+def get_notes(student_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT * FROM notes WHERE student_id = ?
+        ORDER BY date DESC
+    """, (student_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def delete_note(note_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM notes WHERE note_id = ?", (note_id,))
+    conn.commit()
+    conn.close()
+    logger.info(f"Note dropped from schema row: {note_id}")
+    print(f"Note {note_id} deleted!")
+
+# === LINKS OPERATIONS ===
+def add_link(student_id, link_type, url, description):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO links (student_id, link_type, url, description)
+        VALUES (?, ?, ?, ?)
+    """, (student_id, link_type, url, description))
+    conn.commit()
+    conn.close()
+    logger.info(f"Link added for student: {student_id}")
+    print(f"Link added for student {student_id}!")
+
+def get_links(student_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT * FROM links WHERE student_id = ?
+    """, (student_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def delete_link(link_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM links WHERE link_id = ?", (link_id,))
+    conn.commit()
+    conn.close()
+    logger.info(f"Link dropped from schema row: {link_id}")
+    print(f"Link {link_id} deleted!")
+
+# === DOCUMENTS OPERATIONS ===
+def add_document(student_id, file_path, description, upload_date):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO documents (student_id, file_path, description, upload_date)
+        VALUES (?, ?, ?, ?)
+    """, (student_id, file_path, description, upload_date))
+    conn.commit()
+    conn.close()
+    logger.info(f"Document added for student: {student_id}")
+    print(f"Document added for student {student_id}!")
+
+def get_documents(student_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT * FROM documents WHERE student_id = ?
+        ORDER BY upload_date DESC
+    """, (student_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def delete_document(doc_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM documents WHERE doc_id = ?", (doc_id,))
+    conn.commit()
+    conn.close()
+    logger.info(f"Document metadata record dropped: {doc_id}")
+    print(f"Document {doc_id} deleted!")

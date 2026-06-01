@@ -85,3 +85,10 @@
 - Created a top-level execution file (`main.py`) to serve as the unified application entry point.
 - Protected input fields with specialized `try/except` statements to trap invalid user inputs cleanly.
 - Verified successful cross-module initialization, data collection handling, list retrieval rendering, file outputs, and safe exit routines.
+
+## [2026-06-01] — Day 12: Notes, Links and Documents Relational Management
+- Expanded the relational database schema by engineering three new sub-tables (`notes`, `links`, `documents`).
+- Implemented One-to-Many relational linking mapping via custom `FOREIGN KEY` constraints tethered directly to the primary `student_id`.
+- Designed robust transactional database CRUD query hooks featuring sequential data reads and localized record deletions.
+- Automated data indexing features utilizing `AUTOINCREMENT` primary markers alongside runtime `datetime.date` capture objects.
+- Successfully verified structural cascade behaviors and relational insertions using the `src/test_notes_links.py` diagnostic verification wrapper.
