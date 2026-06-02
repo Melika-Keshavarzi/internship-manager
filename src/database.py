@@ -1,10 +1,11 @@
 import sqlite3
 import os
 from src.logger import get_logger
+from src.config_manager import ConfigManager
 
 logger = get_logger("database")
-
-DATABASE_PATH = "data/internship_manager.db"
+config = ConfigManager()
+DATABASE_PATH = config.get_database_path()
 
 def get_connection():
     conn = sqlite3.connect(DATABASE_PATH)
@@ -168,10 +169,21 @@ def search_students(keyword):
     cursor = conn.cursor()
     cursor.execute("""
         SELECT * FROM students
-        WHERE first_name LIKE ? OR last_name LIKE ? OR degree_program LIKE ?
-    """, (f"%{keyword}%", f"%{keyword}%", f"%{keyword}%"))
+        WHERE first_name LIKE ?
+        OR last_name LIKE ?
+        OR degree_program LIKE ?
+        OR student_id LIKE ?
+        OR email LIKE ?
+    """, (
+        f"%{keyword}%",
+        f"%{keyword}%",
+        f"%{keyword}%",
+        f"%{keyword}%",
+        f"%{keyword}%"
+    ))
     rows = cursor.fetchall()
     conn.close()
+    logger.debug(f"Search for '{keyword}': {len(rows)} results")
     return rows
 
 # === NOTES OPERATIONS ===

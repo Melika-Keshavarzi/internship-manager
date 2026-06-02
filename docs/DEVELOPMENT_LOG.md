@@ -92,3 +92,28 @@
 - Designed robust transactional database CRUD query hooks featuring sequential data reads and localized record deletions.
 - Automated data indexing features utilizing `AUTOINCREMENT` primary markers alongside runtime `datetime.date` capture objects.
 - Successfully verified structural cascade behaviors and relational insertions using the `src/test_notes_links.py` diagnostic verification wrapper.
+
+## [2026-06-01] — Day 13: Final Refinements Before Evaluation
+#### 1. README.md Updated
+- Added documentation for all new modules:
+  database.py, logger.py, config_manager.py, cli.py, main.py
+- Added clear explanation of storage mechanisms
+- Clarified that JSON and CSV are import/export features
+- Clarified that SQLite is the main persistence mechanism
+- Added note clarifying demonstration scripts vs unit tests
+#### 2. Storage Mechanisms Clarified
+- SQLite → main and primary persistence mechanism
+- JSON → import/export and demonstration feature
+- CSV → import/export feature for Excel compatibility
+#### 3. ConfigManager Integration Completed
+- database.py now reads database path from ConfigManager
+- logger.py now reads log file path from ConfigManager
+- No more hardcoded paths in any module
+#### 4. Database Search Improved
+- search_students() now searches across:
+  student_id, first_name, last_name, email, degree_program
+#### 5. Demonstration Scripts Clarified
+- README clearly states scripts are demonstration only
+- Not formal automated unit tests
+- Formal testing with pytest planned for future
+#### 6. All changes committed and pushed with clear messages
