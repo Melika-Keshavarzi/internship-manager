@@ -283,3 +283,150 @@ def delete_document(doc_id):
     conn.close()
     logger.info(f"Document metadata record dropped: {doc_id}")
     print(f"Document {doc_id} deleted!")
+
+
+def insert_supervisor(supervisor):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO supervisors
+            (supervisor_id, first_name, last_name, email, department)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            supervisor.supervisor_id,
+            supervisor.first_name,
+            supervisor.last_name,
+            supervisor.email,
+            supervisor.department
+        ))
+        conn.commit()
+        logger.info(f"Supervisor inserted: {supervisor.supervisor_id}")
+        print(f"Supervisor {supervisor.first_name} {supervisor.last_name} inserted!")
+        return True
+    except sqlite3.IntegrityError:
+        logger.warning(f"Duplicate supervisor ID: {supervisor.supervisor_id}")
+        print(f"Supervisor ID {supervisor.supervisor_id} already exists!")
+        return False
+    finally:
+        conn.close()
+
+def get_all_supervisors():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM supervisors")
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def insert_activity(activity):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO activities
+            (activity_id, activity_type, title, topic,
+             start_date, end_date, status,
+             student_id, supervisor_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            activity.activity_id,
+            activity.activity_type,
+            activity.title,
+            activity.topic,
+            activity.start_date,
+            activity.end_date,
+            activity.status,
+            activity.student.student_id,
+            activity.supervisor.supervisor_id
+        ))
+        conn.commit()
+        logger.info(f"Activity inserted: {activity.activity_id}")
+        print(f"Activity '{activity.title}' inserted!")
+        return True
+    except sqlite3.IntegrityError:
+        logger.warning(f"Duplicate activity ID: {activity.activity_id}")
+        print(f"Activity ID {activity.activity_id} already exists!")
+        return False
+    finally:
+        conn.close()
+
+def get_all_activities():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT a.*, 
+               s.first_name || ' ' || s.last_name as student_name,
+               sv.first_name || ' ' || sv.last_name as supervisor_name
+        FROM activities a
+        LEFT JOIN students s ON a.student_id = s.student_id
+        LEFT JOIN supervisors sv ON a.supervisor_id = sv.supervisor_id
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def get_activities_by_status(status):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT a.*,
+               s.first_name || ' ' || s.last_name as student_name,
+               sv.first_name || ' ' || sv.last_name as supervisor_name
+        FROM activities a
+        LEFT JOIN students s ON a.student_id = s.student_id
+        LEFT JOIN supervisors sv ON a.supervisor_id = sv.supervisor_id
+        WHERE a.status = ?
+    """, (status,))
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def get_activities_by_type(activity_type):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT a.*,
+               s.first_name || ' ' || s.last_name as student_name,
+               sv.first_name || ' ' || sv.last_name as supervisor_name
+        FROM activities a
+        LEFT JOIN students s ON a.student_id = s.student_id
+        LEFT JOIN supervisors sv ON a.supervisor_id = sv.supervisor_id
+        WHERE a.activity_type = ?
+    """, (activity_type,))
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def update_activity_status(activity_id, new_status):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE activities SET status = ?
+        WHERE activity_id = ?
+    """, (new_status, activity_id))
+    conn.commit()
+    conn.close()
+    logger.info(f"Activity {activity_id} status updated to {new_status}")
+    print(f"Activity {activity_id} status updated to {new_status}!")
+
+def get_upcoming_deadlines(days=30):
+    from datetime import date, timedelta
+    conn = get_connection()
+    cursor = conn.cursor()
+    today = str(date.today())
+    future = str(date.today() + timedelta(days=days))
+    cursor.execute("""
+        SELECT a.*,
+               s.first_name || ' ' || s.last_name as student_name,
+               sv.first_name || ' ' || sv.last_name as supervisor_name
+        FROM activities a
+        LEFT JOIN students s ON a.student_id = s.student_id
+        LEFT JOIN supervisors sv ON a.supervisor_id = sv.supervisor_id
+        WHERE a.end_date BETWEEN ? AND ?
+        AND a.status != 'completed'
+        ORDER BY a.end_date ASC
+    """, (today, future))
+    rows = cursor.fetchall()
+    conn.close()
+    return rows

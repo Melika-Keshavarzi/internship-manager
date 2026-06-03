@@ -93,7 +93,7 @@
 - Automated data indexing features utilizing `AUTOINCREMENT` primary markers alongside runtime `datetime.date` capture objects.
 - Successfully verified structural cascade behaviors and relational insertions using the `src/test_notes_links.py` diagnostic verification wrapper.
 
-## [2026-06-01] — Day 13: Final Refinements Before Evaluation
+## [2026-06-02] — Day 13: Final Refinements Before Evaluation
 #### 1. README.md Updated
 - Added documentation for all new modules:
   database.py, logger.py, config_manager.py, cli.py, main.py
@@ -117,3 +117,24 @@
 - Not formal automated unit tests
 - Formal testing with pytest planned for future
 #### 6. All changes committed and pushed with clear messages
+
+## [2026-06-03] — Day 14: Activity Tracking and Progress Reports
+- Added supervisor and activity database functions:
+  - insert_supervisor(), get_all_supervisors()
+  - insert_activity(), get_all_activities()
+  - get_activities_by_status(), get_activities_by_type()
+  - update_activity_status()
+  - get_upcoming_deadlines() with configurable day range
+- Created src/report_generator.py with ReportGenerator class.
+- Implemented generate_full_report() showing:
+  - Total students registered
+  - Activity summary by status (active/pending/completed)
+  - Upcoming deadlines within next 30 days
+  - Activities grouped by type (internship/thesis)
+- Implemented generate_student_report() showing:
+  - Full personal information
+  - All notes with dates
+  - All links with types
+  - All documents with upload dates
+- Used SQL JOIN queries to combine data from multiple tables.
+- Verified all reports generate correctly using test_reports.py.
