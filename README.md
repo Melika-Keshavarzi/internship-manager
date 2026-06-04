@@ -22,6 +22,7 @@ internship-manager/
 │   ├── database.py             SQLite database layer (all CRUD operations)
 │   ├── logger.py               Centralized logging configuration
 │   ├── config_manager.py       Configuration management (Singleton)
+│   ├── report_generator.py     Progress and status report generation engine
 │   ├── cli.py                  Interactive command-line interface
 │   ├── test_student.py         Demonstration script for Student class
 │   ├── test_relationships.py   Demonstration script for class relationships
@@ -32,7 +33,8 @@ internship-manager/
 │   ├── test_database.py        Demonstration script for SQLite database
 │   ├── test_logger.py          Demonstration script for logging system
 │   ├── test_config.py          Demonstration script for ConfigManager
-│   └── test_notes_links.py     Demonstration script for notes and links
+│   ├── test_notes_links.py     Demonstration script for notes and links
+│   └── test_reports.py         Demonstration script for activity tracking and reports
 ├── data/
 │   ├── students.json           JSON export file
 │   ├── students.csv            CSV export file
@@ -94,6 +96,9 @@ Implements the Singleton design pattern.
 Provides fallback default values if config file is missing.
 All modules read their paths and settings from this class.
 
+### ReportGenerator (src/report_generator.py)
+Compiles complex information across multiple relational tables into clear, actionable summaries. Generates full high-level overviews as well as focused student progress dossiers containing their exact logged history.
+
 ### CLI (src/cli.py)
 Interactive command-line interface for the application.
 Provides a menu-driven system for all student operations.
@@ -154,6 +159,7 @@ python3 -m src.test_database
 python3 -m src.test_logger
 python3 -m src.test_config
 python3 -m src.test_notes_links
+python3 -m src.test_reports
 
 ## Implemented Functionalities
 
@@ -167,6 +173,10 @@ python3 -m src.test_notes_links
 - Notes management per student
 - Links management per student (GitHub, OneDrive, other)
 - Document registration per student
+- Activity tracking with status management
+- Progress reports with upcoming deadlines
+- Student individual reports with full details
+- Report generation combining all data sources
 - JSON file export and import
 - CSV file export and import
 - pandas-based data summary
