@@ -11,10 +11,15 @@ activities. It is built using object-oriented Python and follows
 a modular architecture with clear separation between data classes,
 management logic, persistence, and user interaction.
 
+This project was developed as part of an academic software
+engineering exercise under the supervision of
+Professor Francesco La Rosa, University of Messina.
+
 ## Project Structure
 
 internship-manager/
 ├── src/
+│   ├── __init__.py             Package initialization
 │   ├── student.py              Student data class with validation
 │   ├── supervisor.py           Supervisor data class
 │   ├── activity.py             Activity data class (internship/thesis)
@@ -22,8 +27,8 @@ internship-manager/
 │   ├── database.py             SQLite database layer (all CRUD operations)
 │   ├── logger.py               Centralized logging configuration
 │   ├── config_manager.py       Configuration management (Singleton)
-│   ├── report_generator.py     Progress and status report generation engine
 │   ├── cli.py                  Interactive command-line interface
+│   ├── report_generator.py     Progress report generation
 │   ├── test_student.py         Demonstration script for Student class
 │   ├── test_relationships.py   Demonstration script for class relationships
 │   ├── test_manager.py         Demonstration script for StudentManager
@@ -34,7 +39,7 @@ internship-manager/
 │   ├── test_logger.py          Demonstration script for logging system
 │   ├── test_config.py          Demonstration script for ConfigManager
 │   ├── test_notes_links.py     Demonstration script for notes and links
-│   └── test_reports.py         Demonstration script for activity tracking and reports
+│   └── test_reports.py         Demonstration script for activity reports
 ├── data/
 │   ├── students.json           JSON export file
 │   ├── students.csv            CSV export file
@@ -69,6 +74,8 @@ Represents an internship or thesis activity.
 Links a Student object and a Supervisor object together.
 Attributes: activity_id, activity_type, title, topic,
 start_date, end_date, status, student, supervisor.
+Activity types: internship, thesis.
+Activity statuses: active, pending, completed.
 
 ### StudentManager (src/student_manager.py)
 Handles collections of Student objects in memory.
@@ -79,34 +86,85 @@ For permanent storage, the SQLite database layer is used.
 
 ### Database (src/database.py)
 SQLite database layer for permanent data storage.
-Contains functions for full CRUD operations on students,
-supervisors, activities, notes, links, and documents.
+Contains functions for full CRUD operations on:
+- students table
+- supervisors table
+- activities table
+- notes table
+- links table
+- documents table
 This is the main persistence mechanism of the application.
-JSON and CSV are used as import/export and demonstration features.
+JSON and CSV are used as import/export features only.
 
 ### Logger (src/logger.py)
 Centralized logging configuration using Python logging library.
 Writes logs to both the terminal and logs/app.log file.
 Uses RotatingFileHandler to manage log file size automatically.
-Log levels used: DEBUG, INFO, WARNING, ERROR.
+Log levels used:
+- DEBUG: detailed search and query operations
+- INFO: successful operations
+- WARNING: validation failures and duplicates
+- ERROR: missing files and failed operations
 
 ### ConfigManager (src/config_manager.py)
 Reads and applies settings from config/config.json.
 Implements the Singleton design pattern.
 Provides fallback default values if config file is missing.
 All modules read their paths and settings from this class.
-
-### ReportGenerator (src/report_generator.py)
-Compiles complex information across multiple relational tables into clear, actionable summaries. Generates full high-level overviews as well as focused student progress dossiers containing their exact logged history.
+Settings managed: database path, log file, log level,
+export folder, app name, version, items per page.
 
 ### CLI (src/cli.py)
 Interactive command-line interface for the application.
-Provides a menu-driven system for all student operations.
+Provides a full menu-driven system for all student operations.
 Completely separated from business logic.
+Handles input validation and user confirmation prompts.
+
+### ReportGenerator (src/report_generator.py)
+Generates progress reports for the application.
+generate_full_report() produces:
+- Total students registered
+- Activity summary by status
+- Upcoming deadlines within 30 days
+- Activities grouped by type
+generate_student_report() produces:
+- Full personal information
+- All notes with dates
+- All links with types and descriptions
+- All documents with upload dates
 
 ### main.py
 Single entry point for the application.
 Run this file to start the interactive CLI.
+
+## Database Schema
+
+The SQLite database contains 6 tables:
+
+students:
+  student_id (PRIMARY KEY), first_name, last_name,
+  email, phone, enrollment_year, degree_program
+
+supervisors:
+  supervisor_id (PRIMARY KEY), first_name, last_name,
+  email, department
+
+activities:
+  activity_id (PRIMARY KEY), activity_type, title, topic,
+  start_date, end_date, status,
+  student_id (FOREIGN KEY), supervisor_id (FOREIGN KEY)
+
+notes:
+  note_id (PRIMARY KEY AUTOINCREMENT),
+  student_id (FOREIGN KEY), date, content
+
+links:
+  link_id (PRIMARY KEY AUTOINCREMENT),
+  student_id (FOREIGN KEY), link_type, url, description
+
+documents:
+  doc_id (PRIMARY KEY AUTOINCREMENT),
+  student_id (FOREIGN KEY), file_path, description, upload_date
 
 ## Storage Mechanisms
 
@@ -127,6 +185,35 @@ CSV Files (data/students.csv)
 Used as an import/export feature.
 Allows exporting student data in a format compatible
 with Excel and Google Sheets for easy viewing.
+
+## Architectural Choices
+
+Object-Oriented Design:
+All core entities are modeled as Python classes with
+attributes and methods. This ensures encapsulation and
+reusability throughout the application.
+
+Modular Architecture:
+Each module has a single responsibility:
+- Data classes handle entity structure and validation
+- StudentManager handles in-memory collection management
+- Database module handles all permanent storage
+- CLI handles all user interaction
+- Logger handles all event tracking
+- ConfigManager handles all settings
+
+Singleton Pattern:
+ConfigManager uses the Singleton pattern to ensure
+only one configuration object exists at any time.
+
+Separation of Concerns:
+User interaction (CLI) is completely separated from
+business logic (StudentManager, Database) which is
+completely separated from data structure (Student, Activity).
+
+Safe SQL:
+All database queries use parameterized statements with ?
+placeholders to prevent SQL injection.
 
 ## Installation
 
@@ -165,24 +252,27 @@ python3 -m src.test_reports
 
 - Management of student personal information
 - Supervisor information management
-- Internship and thesis activity registration
+- Internship and thesis activity registration and tracking
+- Management of thesis and internship titles and topics
+- Supervision information and activity status tracking
+- Management of internship periods and deadlines
+- Notes and comments associated with each student
+- Storage and organization of useful links
+- Management of shared OneDrive folder links
+- Management of GitHub repository links
+- Registration of related documents
+- Filtering and search functionalities
+- Activity logging and progress tracking
 - Object relationships between students, supervisors, activities
-- Collection management with search and filter operations
 - Data validation: empty fields, email format, enrollment year
 - SQLite database with full CRUD operations
-- Notes management per student
-- Links management per student (GitHub, OneDrive, other)
-- Document registration per student
-- Activity tracking with status management
-- Progress reports with upcoming deadlines
-- Student individual reports with full details
-- Report generation combining all data sources
 - JSON file export and import
 - CSV file export and import
 - pandas-based data summary
 - Centralized logging system
 - Configuration management with Singleton pattern
 - Interactive command-line interface
+- Progress report generation
 
 ## Testing Approach
 
@@ -192,9 +282,39 @@ They are NOT formal automated unit tests.
 Formal automated testing using pytest or unittest
 is planned as a future development step.
 
+## Problems Encountered and Solutions
+
+ModuleNotFoundError when running scripts:
+Solution: Run all scripts from the root directory using
+the module flag: python3 -m src.module_name
+
+Empty folders not showing on GitHub:
+Solution: Added .gitkeep placeholder files to empty folders
+
+ConfigManager circular import with logger:
+Solution: Used try/except fallback in logger.py to handle
+cases where ConfigManager is not yet initialized
+
+Database duplicate entries across test runs:
+Solution: Used IF NOT EXISTS in CREATE TABLE and
+try/except with IntegrityError for INSERT operations
+
+## Weekly Progress Summary
+
+Week 1 (Days 1-5): Setup, Student class, relationships,
+manager, JSON storage.
+
+Week 2 (Days 6-10): CSV/pandas, validation, SQLite database,
+logging system, configuration management.
+
+Week 3 (Days 11-17): CLI interface, notes/links/documents,
+activity tracking, reports, final refinements.
+
 ## Developer
 
 Melika Keshavarzi
 Data Analysis Student
 University of Messina
 Supervisor: Professor Francesco La Rosa
+
+Repository: https://github.com/Melika-Keshavarzi/internship-manager
